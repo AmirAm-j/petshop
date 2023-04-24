@@ -1,4 +1,4 @@
-package com.am.petshop.security.model;
+package com.am.petshop.user.model;
 
 import lombok.Getter;
 import lombok.Setter;

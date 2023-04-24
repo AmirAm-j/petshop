@@ -3,10 +3,10 @@ package com.am.petshop.security.controller;
 import com.am.petshop.security.dto.AuthResponseDTO;
 import com.am.petshop.security.dto.LoginDto;
 import com.am.petshop.security.dto.RegisterDto;
-import com.am.petshop.security.model.Role;
-import com.am.petshop.security.model.UserEntity;
-import com.am.petshop.security.repository.RoleRepository;
-import com.am.petshop.security.repository.UserRepository;
+import com.am.petshop.user.model.Role;
+import com.am.petshop.user.model.User;
+import com.am.petshop.user.repository.RoleRepository;
+import com.am.petshop.user.repository.UserRepository;
 import com.am.petshop.security.security.JWTGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,10 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 
@@ -60,15 +57,19 @@ public class AuthController {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
 
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setUsername(registerDto.getUsername());
         user.setPassword(passwordEncoder.encode((registerDto.getPassword())));
+        user.setFirstname(registerDto.getFirstname());
+        user.setLastname(registerDto.getLastname());
+        user.setEmail(registerDto.getEmail());
+        user.setPhone(registerDto.getPhone());
+
 
         Role roles = roleRepository.findByName("USER").get();
         user.setRoles(Collections.singletonList(roles));
 
         userRepository.save(user);
-
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
     }
 }
