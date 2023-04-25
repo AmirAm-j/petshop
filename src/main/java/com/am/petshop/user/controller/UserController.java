@@ -2,12 +2,10 @@ package com.am.petshop.user.controller;
 
 import com.am.petshop.user.model.User;
 import com.am.petshop.user.service.UserService;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +27,26 @@ public class UserController {
 		userService.createNewUsersWithList(newUsersAsList);
 		info.put("message", "Users created successfully");
 		return new ResponseEntity<>(info, HttpStatus.CREATED);
+	}
+
+	@GetMapping("/findUserByUsername/{username}")
+	ResponseEntity <User> findUserByUsername (@PathVariable String username){
+		User user = userService.findUserByUsername(username);
+		return new ResponseEntity<>(user, HttpStatus.FOUND);
+	}
+
+	@GetMapping("/findUserWithId")
+	ResponseEntity<User> findUserById (@RequestParam int id){
+		User user = userService.findUserById(id);
+		return new ResponseEntity<>(user, HttpStatus.FOUND);
+	}
+
+	@DeleteMapping("/deleteUserById/{id}")
+	ResponseEntity<Map<String,Integer>> deleteUSerById (@PathVariable int id){
+		Map<String,Integer> info = new HashMap<>();
+		userService.deleteUserById(id);
+		info.put("user is deleted,  id: ", id);
+		return new ResponseEntity<>(info, HttpStatus.OK);
 	}
 }
 

@@ -8,4 +8,9 @@ public interface IUserService {
 
 	void createNewUsersWithList(List<User> newUsersAsList);
 
+	User findUserByUsername(String username);
+
+	User findUserById(Integer id);
+
+	void deleteUserById(int id);
 }
