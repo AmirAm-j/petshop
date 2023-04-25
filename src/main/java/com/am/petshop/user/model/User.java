@@ -1,18 +1,21 @@
 package com.am.petshop.user.model;
 
-import com.am.petshop.user.model.Role;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @NoArgsConstructor
+ * The JPA specification requires that all persistent classes (@Entity) have a no-arg constructor.
+ * The JPA specification requires that all persistent classes have a no-arg constructor.
+ * Because the compiler automatically creates a default no-arg constructor when no other constructor is defined,
+ * only classes that define constructors must also include a no-arg constructor."
+ */
 
 @Setter
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {

@@ -2,6 +2,8 @@ package com.am.petshop.user.service;
 
 
 import com.am.petshop.user.exception.ResourceNotFoundException;
+import com.am.petshop.user.mapper.UserMapper;
+import com.am.petshop.user.mapper.response.UserDto;
 import com.am.petshop.user.model.User;
 import com.am.petshop.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -14,9 +16,11 @@ import java.util.Optional;
 public class UserService implements IUserService {
 
 	private final UserRepository userRepository;
+	private final UserMapper mapper;
 
-	public UserService(UserRepository userRepository) {
+	public UserService(UserRepository userRepository, UserMapper mapper) {
 		this.userRepository = userRepository;
+		this.mapper = mapper;
 	}
 
 	@Override
@@ -31,13 +35,27 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public User findUserByUsername(String username) {
+	public UserDto findUserByUsername(String username) {
 		Optional<User> user = userRepository.findByUsername(username);
 		if (user.isPresent()){
-			return user.get();
+			return mapper.convertToDto(user.get()) ;
 		} else {
 			throw new ResourceNotFoundException("User not found");
 		}
+	}
+
+	@Override
+	@Transactional
+	public void deleteUserById(Integer id) {
+		 try {
+			 if (userRepository.existsById(id)) {
+				 userRepository.deleteUserById(id);
+			 } else {
+				 throw new ResourceNotFoundException("User not found");
+			 }
+		 } catch (Exception e){
+			 throw new RuntimeException("Error deleting user: " + id, e);
+		 }
 	}
 
 	@Override
@@ -47,12 +65,24 @@ public class UserService implements IUserService {
 
 	@Override
 	@Transactional
-	public void deleteUserById(int id) {
-		if (userRepository.existsById(id)) {
-			userRepository.deleteUserById(id);
-		} else {
-			throw new ResourceNotFoundException("User not found");
+	public UserDto updateUser(UserDto updateUser, Integer id) {
+		try {
+			User user = findUserById(id);
+			if (user!=null){
+				user.setFirstname(updateUser.getFirstname());
+				user.setLastname(updateUser.getLastname());
+				user.setEmail(updateUser.getEmail());
+				user.setPhone(updateUser.getPhone());
+				user.setUsername(updateUser.getUsername());
+				userRepository.save(user);
+				return mapper.convertToDto(user);
+			} else {
+				throw new ResourceNotFoundException("User not found");
+			}
+		} catch (Exception e){
+			throw new RuntimeException("Error updating user: " + id, e);
 		}
+
 	}
 }
 

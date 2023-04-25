@@ -1,5 +1,6 @@
 package com.am.petshop.user.controller;
 
+import com.am.petshop.user.mapper.response.UserDto;
 import com.am.petshop.user.model.User;
 import com.am.petshop.user.service.UserService;
 import org.springframework.data.repository.query.Param;
@@ -30,23 +31,29 @@ public class UserController {
 	}
 
 	@GetMapping("/findUserByUsername/{username}")
-	ResponseEntity <User> findUserByUsername (@PathVariable String username){
-		User user = userService.findUserByUsername(username);
+	ResponseEntity <UserDto> findUserByUsername (@PathVariable String username){
+		UserDto user = userService.findUserByUsername(username);
 		return new ResponseEntity<>(user, HttpStatus.FOUND);
 	}
 
 	@GetMapping("/findUserWithId")
-	ResponseEntity<User> findUserById (@RequestParam int id){
+	ResponseEntity<User> findUserById (@RequestParam Integer id){
 		User user = userService.findUserById(id);
 		return new ResponseEntity<>(user, HttpStatus.FOUND);
 	}
 
 	@DeleteMapping("/deleteUserById/{id}")
-	ResponseEntity<Map<String,Integer>> deleteUSerById (@PathVariable int id){
+	ResponseEntity<Map<String,Integer>> deleteUSerById (@PathVariable Integer id){
 		Map<String,Integer> info = new HashMap<>();
 		userService.deleteUserById(id);
 		info.put("user is deleted,  id: ", id);
 		return new ResponseEntity<>(info, HttpStatus.OK);
+	}
+
+	@PutMapping("/update/{id}")
+	ResponseEntity<UserDto> updateUser(@RequestBody UserDto newInfos, @PathVariable Integer id){
+		UserDto updatedUser = userService.updateUser(newInfos, id);
+		return new ResponseEntity<>(updatedUser, HttpStatus.OK);
 	}
 }
 
