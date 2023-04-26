@@ -1,6 +1,6 @@
 package com.am.petshop.user.mapper;
 
-import com.am.petshop.user.mapper.response.UserDto;
+import com.am.petshop.user.response.UserDto;
 import com.am.petshop.user.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

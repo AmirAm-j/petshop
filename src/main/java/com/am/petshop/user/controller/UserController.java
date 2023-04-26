@@ -1,9 +1,9 @@
 package com.am.petshop.user.controller;
 
-import com.am.petshop.user.mapper.response.UserDto;
+import com.am.petshop.user.response.UserDto;
 import com.am.petshop.user.model.User;
+import com.am.petshop.user.response.UserInfos;
 import com.am.petshop.user.service.UserService;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +54,16 @@ public class UserController {
 	ResponseEntity<UserDto> updateUser(@RequestBody UserDto newInfos, @PathVariable Integer id){
 		UserDto updatedUser = userService.updateUser(newInfos, id);
 		return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+	}
+
+	@GetMapping("/listOfUsersAsTextDatei")
+	ResponseEntity<List<UserInfos>> getListOfUserAsTextDatei(){
+		return new ResponseEntity<>(userService.listOfUsersAsTextDatei(), HttpStatus.FOUND);
+	}
+
+	@GetMapping("/listOfUsersAsPDF")
+	ResponseEntity<List<UserInfos>> getListOfUsersAsPDF(){
+		return new ResponseEntity<>(userService.listOfUsersAsPDF(), HttpStatus.FOUND);
 	}
 }
 

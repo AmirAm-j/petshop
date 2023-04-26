@@ -1,22 +1,36 @@
 package com.am.petshop.user.service;
 
-
 import com.am.petshop.user.exception.ResourceNotFoundException;
 import com.am.petshop.user.mapper.UserMapper;
-import com.am.petshop.user.mapper.response.UserDto;
+import com.am.petshop.user.response.UserDto;
 import com.am.petshop.user.model.User;
 import com.am.petshop.user.repository.UserRepository;
+import com.am.petshop.user.response.UserInfos;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService {
 
 	private final UserRepository userRepository;
 	private final UserMapper mapper;
+	private List<User> userList;
 
 	public UserService(UserRepository userRepository, UserMapper mapper) {
 		this.userRepository = userRepository;
@@ -83,6 +97,72 @@ public class UserService implements IUserService {
 			throw new RuntimeException("Error updating user: " + id, e);
 		}
 
+	}
+
+	@Override
+	public List<UserInfos> listOfUsersAsTextDatei (){
+		userList = userRepository.findAll();
+		List<UserInfos> userInfos;
+		userInfos = userList.stream()
+				.map(u -> new UserInfos(u.getFirstname(), u.getLastname(), u.getEmail(), u.getPhone()))
+				.collect(Collectors.toList());
+		String path = "/Users/amiram/projects/petshop/src/main/java/com/am/petshop/file/listOfUsers.txt";
+		File file = new File(path);
+		try{
+			FileOutputStream fileOutputStream = new FileOutputStream(file, true);
+			for (UserInfos uf: userInfos){
+				fileOutputStream.write(uf.toString().getBytes());
+				fileOutputStream.write(",".getBytes());
+				fileOutputStream.write("\n".getBytes());
+			}
+			fileOutputStream.close();
+		} catch (IOException e){
+			throw new RuntimeException(e);
+		}
+		return userInfos;
+	}
+
+	@SuppressWarnings("VulnerableCodeUsages")
+	@Override
+	public List<UserInfos> listOfUsersAsPDF(){
+
+		userList = userRepository.findAll();
+		List<UserInfos> userInfos;
+		userInfos = userList.stream()
+				.map(u -> new UserInfos(u.getFirstname(), u.getLastname(), u.getEmail(), u.getPhone()))
+				.collect(Collectors.toList()); //TODO: DOPPELT
+
+		String path = "/Users/amiram/projects/petshop/src/main/java/com/am/petshop/file/listOfUsersAsPDF.pdf";
+			try {
+				PdfWriter pdfWriter = new PdfWriter(path);
+				PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+				pdfDocument.addNewPage();
+				Document document = new Document(pdfDocument);
+
+				Paragraph title = new Paragraph("List of Users");
+				title.setTextAlignment(TextAlignment.CENTER);
+				title.setFontSize(18f);
+				document.add(title);
+
+				Table table = new Table(4);
+				table.addHeaderCell("Firstname");
+				table.addHeaderCell("Lastname");
+				table.addHeaderCell("Email");
+				table.addHeaderCell("Phone");
+
+				for (UserInfos uf: userInfos) {
+					table.addCell(uf.getFirstname());
+					table.addCell(uf.getLastname());
+					table.addCell(uf.getEmail());
+					table.addCell(uf.getPhone());
+				}
+				document.add(table);
+
+				document.close();
+			} catch (IOException e) {
+				throw new RuntimeException("Error creating PDF document", e);
+			}
+		return userInfos;
 	}
 }
 

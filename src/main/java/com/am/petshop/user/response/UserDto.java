@@ -1,4 +1,4 @@
-package com.am.petshop.user.mapper.response;
+package com.am.petshop.user.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

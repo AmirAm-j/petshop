@@ -1,8 +1,10 @@
 package com.am.petshop.user.service;
 
-import com.am.petshop.user.mapper.response.UserDto;
+import com.am.petshop.user.response.UserDto;
 import com.am.petshop.user.model.User;
+import com.am.petshop.user.response.UserInfos;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public interface IUserService {
@@ -16,4 +18,8 @@ public interface IUserService {
 	void deleteUserById(Integer id);
 
 	UserDto updateUser(UserDto newInfos, Integer id);
+
+	List<UserInfos> listOfUsersAsTextDatei ();
+
+	List<UserInfos> listOfUsersAsPDF() throws FileNotFoundException;
 }
